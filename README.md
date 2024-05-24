@@ -3,13 +3,13 @@
 Đồ án cuối kì môn Lập trình hướng đối tượng (OOP) với đề tài "ỨNG DỤNG PYGAME LÀM GAME PLATFORMER" nhằm mục tiêu áp dụng những kiến thức đã học trong môn IT002.O21 tại trường Đại học Công nghệ Thông tin - Đại học Quốc gia Hồ Chí Minh vào việc xây dựng một trò chơi điện tử hoàn chỉnh. Trò chơi Mario được phát triển bằng thư viện Pygame, một thư viện phổ biến dành cho lập trình game trong Python. Đồ án này không chỉ nhằm giúp sinh viên củng cố và nâng cao kỹ năng lập trình hướng đối tượng mà còn phát triển khả năng tư duy logic và sáng tạo :smiley:.
 
 ## Nội dung
-1. [Cài đặt](#1.Cài-đặt)
-2. [Cách sử dụng](#2.Cách-sử-dụng)
-3. [Cơ chế hoạt động](#3.Cơ-chế-hoạt-động)
-4. [Tham khảo](#4.Tham-khảo)
+- [Cài đặt](#1Cài-đặt)
+- [Cách sử dụng](#Cách-sử-dụng)
+- [Cơ chế hoạt động](#Cơ-chế-hoạt-động)
+- [Tham khảo](#Tham-khảo)
 
 
-## 1.Cài đặt 
+## Cài đặt 
 
 Để có được một bản sao của dự án này và chạy nó trên máy tính của bạn, hãy làm theo các bước đơn giản sau.
 
