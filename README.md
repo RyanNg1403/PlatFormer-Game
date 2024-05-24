@@ -56,17 +56,22 @@ PlatFormer-Game/
 ├── game.py
 ├── editor.py
 ├── tutorial.json
+│
+│
 ├── data/
 │   ├── images
 │   ├── maps
 │   ├── sfx
 │   └── music.wav
+│
+│
 ├── scripts/
 │   ├── clouds.py
 │   ├── entities.py
 │   ├── tilemap.py
 │   ├── utils.py
 │   └── particles.py
+│
 └── tests/
     ├── __init__.py
     └── test_main.py
