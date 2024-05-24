@@ -39,7 +39,7 @@ Nếu bạn sụng Linux
 ```bash
 python3 game.py
 ```
-## 2. Cách sử dụng
+## Cách sử dụng
 
 ### A. Cấu trúc của đồ án 
 cấu trúc thư mục của dự án:
