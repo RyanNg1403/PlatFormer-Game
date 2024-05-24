@@ -37,18 +37,12 @@ py game.py
 ```
 Nếu bạn sụng Linux
 ```bash
-$python3 game.py
+python3 game.py
 ```
 ## Cách sử dụng
 
 ### A. Cấu trúc của đồ án 
-# Dự Án Của Tôi
-
-Đây là một dự án ví dụ đơn giản.
-
-## Cấu Trúc Thư Mục
-
-Dưới đây là cấu trúc thư mục của dự án:
+cấu trúc thư mục của dự án:
 
 ```plaintext
 PlatFormer-Game/
