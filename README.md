@@ -9,7 +9,7 @@
 - [Tham khảo](#Tham_khảo)
 
 
-## 1. Cài đặt 
+## 1. Cài_đặt 
 
 Để có được một bản sao của dự án này và chạy nó trên máy tính của bạn, hãy làm theo các bước đơn giản sau.
 
