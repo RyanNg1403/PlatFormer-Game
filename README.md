@@ -24,4 +24,18 @@
 3. Sử dụng lệnh sau để nhân bản kho lưu trữ:
 
 ```bash
-git clone https://github.com/ten-nguoi-dung-cua-ban/ten-repo-cua-ban.git
+git clone git@github.com:Ryaniac/PlatFormer-Game.git
+```
+Để trải nghiệm trò chơi, thực hiện các bước sau:
+
+```bash
+cd PlatFormer-Game
+```
+Nếu bạn sử dụng Windows
+```bash
+py game.py
+```
+Nếu bạn sụng Linux
+```bash
+$python3 game.py
+```
