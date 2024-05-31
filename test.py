@@ -1,0 +1,1 @@
+print('idle' in 'idle')

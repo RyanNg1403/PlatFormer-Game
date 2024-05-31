@@ -3,13 +3,13 @@ import sys
 from scripts.utils import  load_images
 from scripts.tilemap import TileMap
 
-RENDER_OFFSET = 2.0
+RENDER_OFFSET = 3
 class Editor:
     def __init__(self):
         pygame.init()
         pygame.display.set_caption('Editor') # Set the name for the application
         # Create a screen/window
-        self.screen = pygame.display.set_mode((640,480))
+        self.screen = pygame.display.set_mode((960,720))
         # The display is half the size of the screen and used to scale the image
         self.display = pygame.Surface((320, 240))
         # Creat a variable for time 
@@ -20,7 +20,10 @@ class Editor:
             'stone' : load_images('tiles/stone'),
             'decor' : load_images('tiles/decor'),
             'spawners' : load_images('tiles/spawners'),
+            'monsters' : load_images('monsters', scale=2)
         }
+    
+
         self.movement = [False, False, False, False]
         self.tilemap = TileMap(self)
         self.scroll = [0,0]
@@ -32,7 +35,7 @@ class Editor:
         self.shift = False
         self.ongrid = True
         try:
-            self.tilemap.load('data/maps/0.json')
+            self.tilemap.load('tutorial.json')
         except FileNotFoundError:
             print('Map file not found!, BIATCH')
     def run(self):
@@ -113,7 +116,7 @@ class Editor:
                         self.tilemap.autotile()
                     if event.key == pygame.K_o:
                         self.tilemap.save('tutorial.json')
-                        print('Saved S quccessfully!')
+                        print('Saved Successfully!')
                     if event.key == pygame.K_g:
                         self.ongrid = not self.ongrid
                     if event.key == pygame.K_LSHIFT:
