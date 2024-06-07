@@ -7,6 +7,7 @@ from scripts.utils import load_image, load_images, Animation
 from scripts.tilemap import TileMap
 from scripts.clouds import Clouds
 from scripts.particles import Particle
+pygame.mixer.pre_init(44100, -16, 512)  
 class Game:
     def __init__(self): 
         pygame.init()
@@ -18,7 +19,6 @@ class Game:
         # Creat a variable for time w
         self.clock = pygame.time.Clock()
         self.assets = {
-            'player' : load_image("Individual Sprites/idle/adventurer-idle-00.png"), 
             'grass' : load_images('tiles/grass', overlay=True),
             'large_decor' : load_images('tiles/large_decor', overlay=True),
             'stone' : load_images('tiles/stone', overlay=True),
@@ -29,20 +29,24 @@ class Game:
             'enemy/demon-run': Animation(load_images('enemy/demon-idle', scale=2,flip=True), img_duration=6),
             'enemy/demon-fall': Animation(load_images('enemy/demon-idle', scale=2, flip=True), img_duration=6),
             'enemy/demon-attack': Animation(load_images('enemy/demon-attack2', scale=1.1, flip=True), img_duration=6),
+            'enemy/demon-die': Animation(load_images('enemy/demon-die', scale=1.7, flip=True), img_duration=3,loop=False),
             'enemy/horse-idle': Animation(load_images('enemy/horse-idle', scale=2, flip=True), img_duration=6),
+            'enemy/horse-attack': Animation(load_images('enemy/horse-idle', scale=2, flip=True), img_duration=6),
             'enemy/horse-run': Animation(load_images('enemy/horse-run', scale=2, flip=True), img_duration=6),
+            'enemy/horse-die': Animation(load_images('enemy/horse-idle', scale=2, flip=True), img_duration=6,loop=False),
             'enemy/horse-fall': Animation(load_images('enemy/horse-idle', scale=2, flip=True), img_duration=6),
-            'enemy/ghost-idle': Animation(load_images('enemy/ghost-idle', scale=2, flip=True), img_duration=6),
-            'enemy/ghost-vanish': Animation(load_images('enemy/ghost-vanish', scale=2, flip=True), img_duration=6),
-            'enemy/ghost-fall': Animation(load_images('enemy/ghost-idle', scale=2, flip=True), img_duration=6),
-            'enemy/ghost-attack': Animation(load_images('enemy/ghost-attack', scale=2, flip=True), img_duration=6),
-            'enemy/ghost-appear': Animation(load_images('enemy/ghost-appear', scale=2, flip=True), img_duration=6),
+            'enemy/ghost-idle': Animation(load_images('enemy/ghost-idle', scale=1.5, flip=True), img_duration=6),
+            'enemy/ghost-run': Animation(load_images('enemy/ghost-idle', scale=1.5, flip=True), img_duration=6),
+            'enemy/ghost-die': Animation(load_images('enemy/ghost-vanish', scale=1.5, flip=True), img_duration=6,loop=False),
+            'enemy/ghost-fall': Animation(load_images('enemy/ghost-idle', scale=1.5, flip=True), img_duration=6),
+            'enemy/ghost-attack': Animation(load_images('enemy/ghost-attack', scale=1.5, flip=True), img_duration=6),
             'player/idle': Animation(load_images('final form/idle', scale=1.2), img_duration=6),
             'player/run': Animation(load_images('final form/run', scale=1.2), img_duration=4),
             'player/jump': Animation(load_images('final form/jump', scale=1.2), img_duration=15),
             'player/fall': Animation(load_images('final form/jump', scale=1.2), img_duration=5),
             'player/slide': Animation(load_images('final form/crouch-slash', scale=1.2), img_duration=1),
             'player/crouch': Animation(load_images('final form/crouch', scale=1.2), img_duration=8),
+            'player/attack': Animation(load_images('final form/attack', scale=1.2), img_duration=8),
             'monsters' : load_images('monsters'),
             'particle/leaf': Animation(load_images('particles/leaf', color=(105,123,140), overlay=True), img_duration=20, loop=False), 
             'spawners' : load_images('tiles/spawners'),
@@ -61,7 +65,7 @@ class Game:
         try:
             self.tilemap.load('tutorial.json')
         except FileNotFoundError:
-            print('Map file not found!, BIATCH')
+            print('Map file not found')
             
         for tree in self.tilemap.extract([('large_decor', 2)]): 
             self.leaf_spawners.append(pygame.Rect(tree['pos'][0] + 4, 
@@ -71,8 +75,13 @@ class Game:
         for monster in self.tilemap.extract([('monsters', 0), ('monsters', 1), ('monsters',2)], keep=True): 
             if monster['variant'] == 0: 
                 self.enemies.append(Enemy(self, monster['pos'], monster_type = 'demon'))
+            if monster['variant'] == 1: 
+                self.enemies.append(Enemy(self, monster['pos'], monster_type = 'ghost'))
             if monster['variant'] == 2: 
                 self.enemies.append(Enemy(self, monster['pos'], monster_type = 'horse'))
+        pygame.mixer.music.load('data/sfx/background_lv1.mp3') 
+        pygame.mixer.music.set_volume(0.5) 
+        pygame.mixer.music.play(-1)
     def run(self):
         while True:
             self.display.blit(self.assets['background'], (0,0))
@@ -93,7 +102,7 @@ class Game:
                 enemy.render(self.display, offset = self.scroll)
                 
             self.player.update(self.tilemap, (self.movement[1]- self.movement[0], 0))
-            self.player.render(self.display, offset = self.scroll, tilemap= self.tilemap)
+            self.player.render(self.display, offset = self.scroll)
             
 
 
@@ -114,13 +123,15 @@ class Game:
                     if event.key == pygame.K_UP or event.key == pygame.K_w:
                         self.player.jump()
                     if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
-                        self.movement[1] = True
+                         self.movement[1] = True
                     if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                         self.movement[0] = True
                     if event.key == pygame.K_k:
                         self.player.dash()
                     if event.key == pygame.K_s:
                         self.player.crouching = True
+                    if event.key == pygame.K_l: 
+                        self.player.attack = True
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                         self.movement[1] = False
@@ -128,6 +139,8 @@ class Game:
                         self.movement[0] = False
                     if event.key == pygame.K_s:
                         self.player.crouching = False
+                    if event.key == pygame.K_l: 
+                        self.player.attack = False
             self.screen.blit(pygame.transform.scale(self.display, self.screen.get_size()),(0,0))
             pygame.display.update() 
             self.clock.tick(60)   # 60 FPS

@@ -61,7 +61,7 @@ class Animation:
         if self.loop:
             self.frame = (self.frame +1) % (self.duration * len(self.images))
         else:
-            self.frame = min(self.frame+1, self.duration * self.len(self.images) - 1)
+            self.frame = min(self.frame+1, self.duration * len(self.images) - 1)
             if self.frame >= self.duration * len(self.images) - 1:
                 self.done = True
     def img(self):
