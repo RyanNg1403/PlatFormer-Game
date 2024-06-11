@@ -56,7 +56,7 @@ PlatFormer-Game/
 │   ├── images
 │   ├── maps
 │   ├── sfx
-│   └── music.wav
+│   └── menu
 │
 │
 ├── scripts/
@@ -64,7 +64,8 @@ PlatFormer-Game/
 │   ├── entities.py
 │   ├── tilemap.py
 │   ├── utils.py
-│   └── particles.py
+│   ├── particles.py
+|   ├── menu.py
 │
 └── tests/
     ├── __init__.py
