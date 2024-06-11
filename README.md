@@ -84,5 +84,6 @@ PlatFormer-Game/
 ```
 ### B. Demo Video
 #### Dưới đây là video chơi thử game Godthic Adventure
-<iframe src="https://drive.google.com/file/d/1IDn6WXkr_PW0bfk6Ue7wof7ouP5RS8OX/preview" width="640" height="480" allow="autoplay"></iframe>
+[Watch the video](https://drive.google.com/file/d/1IDn6WXkr_PW0bfk6Ue7wof7ouP5RS8OX/view?usp=sharing)
+
 
