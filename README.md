@@ -84,4 +84,4 @@ PlatFormer-Game/
 ```
 ### B. Demo Video
 #### Dưới đây là video chơi thử game Godthic Adventure
-<video src="Demo video/DemoVid.mp4" controls="controls" style="max-width: 100%;">
+<video src="Ryaniac/PlatFormer-Game/Demo video/DemoVid.mp4" controls="controls" style="max-width: 100%;">
