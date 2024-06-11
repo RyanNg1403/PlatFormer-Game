@@ -39,10 +39,14 @@ Nếu bạn sụng Linux
 ```bash
 python3 game.py
 ```
+Ngoài ra, nếu bạn chưa download thư viện pygame
+```bash
+pip install pygame
+```
 ## Cách sử dụng
 
 ### A. Cấu trúc của đồ án 
-cấu trúc thư mục của dự án:
+#### Cấu trúc thư mục của dự án:
 
 ```plaintext
 PlatFormer-Game/
@@ -51,22 +55,33 @@ PlatFormer-Game/
 ├── editor.py
 ├── tutorial.json
 │
-│
 ├── data/
-│   ├── images
-│   ├── maps
+│   ├── images/
+│   │   ├── background
+│   │   ├── clouds
+│   │   ├── enemy
+│   │   ├── entities
+│   │   ├── final_form
+│   │   ├── menu
+│   │   ├── monsters
+│   │   ├── particles
+│   │   └── tiles
+│   ├── maps/
+│   │   ├── 0.json
+│   │   ├── 1.json
+│   │   └── 2.json
 │   ├── sfx
 │   └── menu
 │
-│
-├── scripts/
-│   ├── clouds.py
-│   ├── entities.py
-│   ├── tilemap.py
-│   ├── utils.py
-│   ├── particles.py
-|   ├── menu.py
-│
-└── tests/
-    ├── __init__.py
-    └── test_main.py
+└── scripts/
+    ├── clouds.py
+    ├── entities.py
+    ├── tilemap.py
+    ├── utils.py
+    ├── particles.py
+    └── menu.py
+
+```
+### B. Demo Video
+#### Dưới đây là video chơi thử game Godthic Adventure
+<video src="Demo video/DemoVid.mp4" controls="controls" style="max-width: 100%;">
