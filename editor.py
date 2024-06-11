@@ -34,8 +34,9 @@ class Editor:
         self.right_clicking = False
         self.shift = False
         self.ongrid = True
+        self.level = 0
         try:
-            self.tilemap.load('tutorial.json')
+            self.tilemap.load('data/maps/' + str(self.level) + '.json')
         except FileNotFoundError:
             print('Map file not found!, BIATCH')
     def run(self):
@@ -115,7 +116,7 @@ class Editor:
                     if event.key == pygame.K_t:
                         self.tilemap.autotile()
                     if event.key == pygame.K_o:
-                        self.tilemap.save('tutorial.json')
+                        self.tilemap.save('data/maps/' + str(self.level) + '.json')
                         print('Saved Successfully!')
                     if event.key == pygame.K_g:
                         self.ongrid = not self.ongrid

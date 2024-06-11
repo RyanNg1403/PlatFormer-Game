@@ -47,6 +47,26 @@ def add_color_overlay(image, color, alpha):
     
     return overlay_image
 
+def render_text_with_outline(text, font, text_color, outline_color, outline_thickness):
+    # Render the outline text
+    outline_image = font.render(text, True, outline_color)
+    text_image = font.render(text, True, text_color)
+
+    # Create a new surface to hold both text and outline
+    width = text_image.get_width() + 2 * outline_thickness
+    height = text_image.get_height() + 2 * outline_thickness
+    combined_image = pygame.Surface((width, height), pygame.SRCALPHA)
+
+    # Blit the outline text at multiple positions to create the outline effect
+    for dx in range(-outline_thickness, outline_thickness + 1):
+        for dy in range(-outline_thickness, outline_thickness + 1):
+            if dx != 0 or dy != 0:  # Skip the center position
+                combined_image.blit(outline_image, (dx + outline_thickness, dy + outline_thickness))
+
+    # Blit the main text in the center
+    combined_image.blit(text_image, (outline_thickness, outline_thickness))
+
+    return combined_image
 
 class Animation:
     def __init__(self, images, img_duration=5, loop=True, SpriteSheet = False):

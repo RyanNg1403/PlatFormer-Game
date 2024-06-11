@@ -98,7 +98,14 @@ class PhysicsEntity:
         health_bar_width = 25 if self.type == 'enemy' else 45
         health_bar_height = 5 if self.type == 'enemy' else 8 
         health_ratio = self.health / self.max_health
-        health_color = (255, 0, 0) if self.type == 'enemy' else (35, 125, 75)  # Red color
+        player_health_bar = (35, 125, 75)
+        if self.type == 'player': 
+            if  0.3 <= health_ratio < 0.7: 
+                player_health_bar = (135, 117, 27)
+            elif health_ratio < 0.3:
+                player_health_bar = (171, 83, 36)
+
+        health_color = (255, 0, 0) if self.type == 'enemy' else player_health_bar  # Red color
 
         if self.type == 'player':
             bar_x = 10
@@ -132,10 +139,17 @@ class Player(PhysicsEntity):
         self.run_sound = pygame.mixer.Sound('data/sfx/run.mp3')
         self.jump_sound = pygame.mixer.Sound('data/sfx/jump.mp3')
         self.land_sound = pygame.mixer.Sound('data/sfx/land.mp3')
+        self.hurt_sound = pygame.mixer.Sound('data/sfx/hurt.mp3')
+        self.die_sound = pygame.mixer.Sound('data/sfx/die.mp3')
 
     def update(self, tilemap, movement):
         super().update(tilemap=tilemap, movement=movement)
         self.air_time +=1
+        if self.health <= 0: 
+            self.set_action('die')
+            self.animation.update()
+            channel7.play(self.die_sound)
+            return 
         if self.collisions['down']:
             self.air_time = 0
             self.jumps = 3
@@ -206,14 +220,15 @@ class Player(PhysicsEntity):
             animation_rect.center = (self.pos[0] - offset[0] -5 + self.anim_offset[0],
                                    self.pos[1] - offset[1] + self.anim_offset[1])
         elif self.action == 'run' and self.collisions['right']:
-            animation_rect.center = (self.pos[0] - offset[0] -10 + + self.anim_offset[0],
+            animation_rect.center = (self.pos[0] - offset[0] -10 +  self.anim_offset[0],
                                    self.pos[1] - offset[1] + self.anim_offset[1])
         else:
-            animation_rect.center = (self.pos[0] - offset[0] + + self.anim_offset[0],
+            animation_rect.center = (self.pos[0] - offset[0] +  self.anim_offset[0],
                                    self.pos[1] - offset[1] + self.anim_offset[1])
 
         surf.blit(pygame.transform.flip(animation_img, self.flip, False), animation_rect.topleft)
         self.render_health_bar(surf, offset)
+        self.is_dead = self.animation.done 
 
 class Enemy(PhysicsEntity): 
     def __init__(self, game, pos, monster_type, e_type='enemy'): 
@@ -238,11 +253,14 @@ class Enemy(PhysicsEntity):
             self.die_sound = pygame.mixer.Sound('data/sfx/horse_die.wav')
             self.die_sound.set_volume(0.55)
         elif self.monster_type == 'ghost':
+            self.attack_sound = pygame.mixer.Sound('data/sfx/ghost_attack.wav')
             self.anim_offsets = {'idle': [-5, -11], 'run': [-5, -11], 'fall': [-5, -11], 'attack': [-5, -11],'die': [-5, -11]}
             self.die_sound = pygame.mixer.Sound('data/sfx/ghost_die.mp3')
             self.die_sound.set_volume(0.35)
     
-    def update(self, tilemap, movement=(0, 0)): 
+    def update(self, tilemap,surf, movement=(0, 0)): 
+        if self.velocity[1] >= 8: 
+            self.game.enemies.remove(self)
         if self.die:
             self.set_action('die')
             self.is_damaged = False
@@ -255,8 +273,8 @@ class Enemy(PhysicsEntity):
             self.velocity[1] = 0
 
         player = self.game.player
-        distance_to_player = player.pos[0] - player.anim_offset[0] - self.pos[0] + self.anim_offset[0]
-        same_level = abs(player.pos[1] - player.anim_offset[1] - self.pos[1] + self.anim_offset[1]) < self.size[1]
+        distance_to_player = player.pos[0] + player.anim_offset[0] - self.pos[0] - self.anim_offset[0]
+        same_level = abs(player.pos[1] + player.anim_offset[1] - self.pos[1] - self.anim_offset[1]) < self.size[1]
 
         if self.monster_type in ['demon', 'ghost'] and same_level and abs(distance_to_player) < 100 and player.dash == False:
             if distance_to_player > 0:
@@ -287,45 +305,55 @@ class Enemy(PhysicsEntity):
             self.walking = random.randint(30, 120)
 
         monster_rect = self.rect()
-        monster_rect.width += (10 if not player.flip else 5)
-        monster_rect.height += 15
-        monster_rect.center = (self.pos[0] + self.anim_offset[0], self.pos[1] + self.anim_offset[1])
+        monster_rect.width += (10 if (not player.flip) and (self.monster_type == 'demon') else 5)
+        monster_rect.height += 15 if self.monster_type == 'demon' else 0
+        if self.action == 'attack': 
+            monster_rect.center = (self.pos[0] + self.anim_offsets['idle'][0], self.pos[1] + self.anim_offsets['idle'][1])
+        else: 
+            monster_rect.center = (self.pos[0] + self.anim_offset[0], self.pos[1] + self.anim_offset[1])
         player_rect = player.rect()
         player_rect.center = (player.pos[0] + player.anim_offset[0] , player.pos[1] + player.anim_offset[1])
-        
         if self.monster_type == 'demon' and not self.flip and self.action == 'attack':
             monster_rect.center = (self.pos[0] + self.anim_offset[0]+43, self.pos[1] + self.anim_offset[1]+8)
 
         if self.monster_type in ['demon', 'ghost']:
-
-            if monster_rect.colliderect(player_rect): 
-                self.attack_motion = 60 if self.monster_type == 'demon' else 48
+            if monster_rect.colliderect(player_rect):
+                if not self.attack_motion:
+                    self.set_action('attack')
+                    self.attack_motion = 60 if self.monster_type == 'demon' else 48
+                frame = self.animation.frame
+                dur = self.animation.duration
+    
+                if int(frame/dur) == len(self.animation.images) - 1: 
+                    player.health -= 2 if self.monster_type == 'demon' else 0.5
+                    if  not channel7.get_busy():
+                        channel7.play(player.hurt_sound)
+                    if player.health <= 0: 
+                        self.game.screenshake = max(12, self.game.screenshake)
             if self.attack_motion:
                 self.walking = 0
                 self.attack_motion -= 1
-                self.set_action('attack')
             else:
                 self.set_action('idle')
-                if random.random() > 0.998: 
-                    self.attack_motion = 60 if self.monster_type == 'demon' else 48
         
         if self.anim_offset != self.anim_offsets[self.action]: 
             self.anim_offset = self.anim_offsets[self.action]
         if abs(player.dashes) >= 50:
+            self.game.screenshake = max(12, self.game.screenshake)
             if monster_rect.colliderect(player_rect):
                 self.is_damaged = True
-                self.health -= 150
+                self.health -= 3
                 if self.monster_type != 'demon':
                     movement = (movement[0], -2)
         if player.action == 'attack':
             if monster_rect.colliderect(player_rect):
                 self.is_damaged = True
-                self.health -= 0.5
-                print('hellya')
+                self.health -= 2
         else:
             self.is_damaged = False
         if self.health <= 0: 
             self.die = True
+
         
         if self.is_damaged and self.monster_type != 'demon': 
             if (self.pos[0] + self.anim_offset[0] - player.pos[0] - player.anim_offset[0]) > 0:
@@ -333,7 +361,7 @@ class Enemy(PhysicsEntity):
             else: 
                 movement = (-0.5, movement[1])
         
-        if self.monster_type == 'demon' and self.action == 'attack': 
+        if self.action == 'attack': 
             if not channel1.get_busy():
                 channel1.play(self.attack_sound)
             
@@ -375,3 +403,4 @@ channel3 = pygame.mixer.Channel(3)
 channel4 = pygame.mixer.Channel(4)
 channel5 = pygame.mixer.Channel(5)
 channel6 = pygame.mixer.Channel(6)
+channel7 = pygame.mixer.Channel(7)
